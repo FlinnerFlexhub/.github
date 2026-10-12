@@ -1,0 +1,59 @@
+# Reusable workflow called by every Flinner repo (see README.md for the caller).
+# 1. Prefixes issue and PR titles with the repo tag: Flinner-Back -> [back], Flinner-Front -> [front].
+# 2. PRs: checks the title is "[tag] type(scope)!: description".
+# 3. PRs (gitflow: true): checks which branch may be merged into which.
+name: conventions
+
+on:
+  workflow_call:
+    inputs:
+      gitflow:
+        description: Check that PR branches follow gitflow
+        type: boolean
+        default: true
+
+jobs:
+  conventions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check title and branches
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
+          TITLE: ${{ github.event.pull_request.title || github.event.issue.title }}
+          BASE: ${{ github.base_ref }}
+          HEAD: ${{ github.head_ref }}
+          GITFLOW: ${{ inputs.gitflow }}
+        run: |
+          set -euo pipefail
+          tag="${REPO#*/}"; tag="${tag#Flinner-}"; tag="${tag,,}"
+
+          if [[ "$TITLE" != "[$tag] "* ]]; then
+            TITLE="[$tag] $TITLE"
+            gh api -X PATCH "repos/$REPO/issues/$NUMBER" -f title="$TITLE" > /dev/null
+            echo "Title tagged: $TITLE"
+          fi
+          [[ "$EVENT" == pull_request ]] || exit 0
+
+          types='feat|fix|refactor|perf|test|docs|chore|ci|release'
+          title_re="^\[[a-z]+\] ($types)(\([a-z0-9-]+\))?!?: .+"
+          if ! [[ "$TITLE" =~ $title_re ]]; then
+            echo "::error::PR title must look like '[$tag] feat: short description' (types: ${types//|/, })"
+            exit 1
+          fi
+
+          [[ "$GITFLOW" == true ]] || exit 0
+          v='[0-9]+\.[0-9]+\.[0-9]+'
+          case "$BASE" in
+            main)          allowed="^development/$v\$" ;;
+            development)   allowed="^(feature/[0-9]+|development/$v|dependabot/.+)\$" ;;
+            development/*) allowed="^hotfix/[0-9]+\$" ;;
+            *)             exit 0 ;;
+          esac
+          if ! [[ "$HEAD" =~ $allowed ]]; then
+            echo "::error::'$HEAD' may not be merged into '$BASE'. Allowed: main <- development/X.Y.Z, development <- feature/<issue> | development/X.Y.Z, development/X.Y.Z <- hotfix/<issue>"
+            exit 1
+          fi
+          echo "Title and branches OK"

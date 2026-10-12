@@ -1,0 +1,26 @@
+name: Todo
+description: A task or chore to track
+title: "todo: "
+labels: ["todo", "triage"]
+body:
+  - type: textarea
+    id: task
+    attributes:
+      label: What needs to be done?
+      placeholder: Describe the task clearly
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context / background
+      placeholder: Why is this needed? Any relevant details?
+    validations:
+      required: false
+  - type: textarea
+    id: definition_of_done
+    attributes:
+      label: Definition of done
+      placeholder: How do we know this task is complete?
+    validations:
+      required: false

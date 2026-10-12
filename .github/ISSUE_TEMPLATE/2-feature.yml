@@ -1,0 +1,54 @@
+name: Feature request
+description: A new feature or an improvement
+title: "feat: "
+labels: ["enhancement", "triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / motivation
+      description: What problem does this solve? Who is affected?
+      placeholder: As a [user type], I want to... so that...
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      placeholder: Describe what you would like to see
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Used to test the change. Happy flow = what a normal user does; grumpy flow = wrong input, missing permission, other tenant, double submit, …
+      placeholder: |
+        Happy flow:
+        - ...
+        Grumpy flow:
+        - ...
+    validations:
+      required: true
+  - type: input
+    id: counterpart
+    attributes:
+      label: Counterpart issue
+      description: The matching issue in the other repo, if the change spans front and back.
+      placeholder: FlinnerFlexhub/Flinner-Front#12
+    validations:
+      required: false
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      placeholder: Other approaches you have thought about
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I have searched for existing issues / feature requests
+          required: true
