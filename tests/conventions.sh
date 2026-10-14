@@ -17,12 +17,21 @@ t pass pull_request $B "[back] chore(deps): Bump x from 1 to 2"  development    
 t pass pull_request $B "[back] feat(notifications)!: drop x"     development        feature/42 true
 t fail pull_request $B "Dev/cleanup"                             development        dev/cleanup true
 t fail pull_request $B "[back] feat: x"                          development        dev/cleanup true
+t pass pull_request $B "[back] feat: x"                          development        feature/fixed-translations true
+t pass pull_request $B "[back] feat: x"                          development        feature/48-grid-filter true
+t pass pull_request $B "[back] feat: x"                          development        security/refresh-token-cookie true
+t fail pull_request $B "[back] feat: x"                          development        feature/Fixed_Translations true
+t fail pull_request $B "[back] feat: x"                          development        feature/ true
+t fail pull_request $B "[back] feat: x"                          development        hotfix/7 true
 t fail pull_request $B "[back] feat: x"                          main               feature/42 true
-t pass pull_request $B "[back] release: 1.2.0"                   main               development/1.2.0 true
-t fail pull_request $B "[back] release: 1.2"                     main               development/1.2 true
-t pass pull_request $B "[back] fix: x"                           development/1.2.0  hotfix/7 true
-t fail pull_request $B "[back] fix: x"                           development/1.2.0  feature/7 true
-t pass pull_request $B "[back] release: merge back 1.2.0"        development        development/1.2.0 true
+t fail pull_request $B "[back] feat: x"                          main               development true
+t pass pull_request $B "[back] release: 1.2.0"                   main               release/1.2.0 true
+t fail pull_request $B "[back] release: 1.2"                     main               release/1.2 true
+t fail pull_request $B "[back] release: 1.2.0"                   main               development/1.2.0 true
+t pass pull_request $B "[back] fix: x"                           release/1.2.0      hotfix/7 true
+t pass pull_request $B "[back] fix: x"                           release/1.2.0      hotfix/login-redirect true
+t fail pull_request $B "[back] fix: x"                           release/1.2.0      feature/7 true
+t pass pull_request $B "[back] release: merge back 1.2.0"        development        release/1.2.0 true
 t pass pull_request FlinnerFlexhub/Flinner-Claude "docs: x"      main               feature/3 false
 t fail pull_request FlinnerFlexhub/Flinner-Front "[front] Feat: x" development      feature/3 true
 t pass issues       FlinnerFlexhub/Flinner-Front "anything"      ""                 "" true
