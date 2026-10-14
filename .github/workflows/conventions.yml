@@ -45,15 +45,18 @@ jobs:
           fi
 
           [[ "$GITFLOW" == true ]] || exit 0
+          # release/X.Y.Z is cut from development to freeze a version. It is not development/X.Y.Z: git cannot hold
+          # both the branch `development` and branches below `development/`.
           v='[0-9]+\.[0-9]+\.[0-9]+'
+          name='[a-z0-9][a-z0-9._-]*'   # an issue number (42) or a short name (fixed-translations)
           case "$BASE" in
-            main)          allowed="^development/$v\$" ;;
-            development)   allowed="^(feature/[0-9]+|development/$v|dependabot/.+)\$" ;;
-            development/*) allowed="^hotfix/[0-9]+\$" ;;
-            *)             exit 0 ;;
+            main)        allowed="^release/$v\$" ;;
+            development) allowed="^((feature|security)/$name|release/$v|dependabot/.+)\$" ;;
+            release/*)   allowed="^hotfix/$name\$" ;;
+            *)           exit 0 ;;
           esac
           if ! [[ "$HEAD" =~ $allowed ]]; then
-            echo "::error::'$HEAD' may not be merged into '$BASE'. Allowed: main <- development/X.Y.Z, development <- feature/<issue> | development/X.Y.Z, development/X.Y.Z <- hotfix/<issue>"
+            echo "::error::'$HEAD' may not be merged into '$BASE'. Allowed: main <- release/X.Y.Z, development <- feature/<issue or name> | security/<name> | release/X.Y.Z (merge-back), release/X.Y.Z <- hotfix/<issue or name>"
             exit 1
           fi
           echo "Title and branches OK"
